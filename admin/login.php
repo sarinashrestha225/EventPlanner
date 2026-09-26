@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
 
         $stmt = $conn->prepare(
-            "SELECT id, name, password
+            "SELECT id, name, email, password
              FROM admins
              WHERE name = ? AND status = 'active'
              LIMIT 1"
@@ -40,7 +40,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $admin = $result->fetch_assoc();
 
+                $password_valid = false;
+
+                if (
+                    password_get_info($admin["password"])["algo"] !== 0 &&
+                    password_verify($password, $admin["password"])
+                ) {
+                    $password_valid = true;
+                }
+
                 if ($password === $admin["password"]) {
+                    $password_valid = true;
+                }
+
+                if ($password_valid) {
 
                     session_regenerate_id(true);
 
@@ -48,12 +61,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     $_SESSION["user_id"] = (int)$admin["id"];
                     $_SESSION["user_role"] = "admin";
-
                     $_SESSION["admin_logged_in"] = true;
                     $_SESSION["admin_id"] = (int)$admin["id"];
                     $_SESSION["admin_name"] = $admin["name"];
                     $_SESSION["admin_username"] = $admin["name"];
-
+                    $_SESSION["admin_email"] = $admin["email"] ?? "";
                     $_SESSION["active_role"] = "admin";
                     $_SESSION["role"] = "admin";
 
@@ -63,13 +75,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 } else {
 
                     $error = "Incorrect password.";
-
                 }
 
             } else {
 
                 $error = "Admin account not found.";
-
             }
 
             $stmt->close();
@@ -115,7 +125,6 @@ body {
     align-items: center;
 
     padding: 20px;
-
 }
 
 .login-wrapper {
@@ -137,7 +146,6 @@ body {
         0 5px 20px rgba(255, 182, 193, 0.25);
 
     border: 2px solid #f5d98b;
-
 }
 
 .left-section {
@@ -167,7 +175,6 @@ body {
     position: relative;
 
     overflow: hidden;
-
 }
 
 .left-section::before {
@@ -187,7 +194,6 @@ body {
     top: -80px;
 
     left: -70px;
-
 }
 
 .left-section::after {
@@ -207,7 +213,6 @@ body {
     bottom: -70px;
 
     right: -60px;
-
 }
 
 .logo-circle {
@@ -237,7 +242,6 @@ body {
     position: relative;
 
     z-index: 2;
-
 }
 
 .brand {
@@ -253,7 +257,6 @@ body {
     position: relative;
 
     z-index: 2;
-
 }
 
 .tagline {
@@ -269,7 +272,6 @@ body {
     position: relative;
 
     z-index: 2;
-
 }
 
 .decor-line {
@@ -283,7 +285,6 @@ body {
     margin: 22px auto;
 
     border-radius: 10px;
-
 }
 
 .right-section {
@@ -299,7 +300,6 @@ body {
     justify-content: center;
 
     background: #fffdf8;
-
 }
 
 .login-title {
@@ -311,7 +311,6 @@ body {
     color: #7d4b5c;
 
     margin-bottom: 8px;
-
 }
 
 .login-subtitle {
@@ -321,7 +320,6 @@ body {
     margin-bottom: 32px;
 
     font-size: 14px;
-
 }
 
 .error {
@@ -339,13 +337,11 @@ body {
     margin-bottom: 20px;
 
     font-size: 14px;
-
 }
 
 .form-group {
 
     margin-bottom: 20px;
-
 }
 
 .form-group label {
@@ -359,13 +355,11 @@ body {
     font-weight: 600;
 
     font-size: 14px;
-
 }
 
 .input-wrapper {
 
     position: relative;
-
 }
 
 .input-wrapper span {
@@ -379,7 +373,6 @@ body {
     transform: translateY(-50%);
 
     font-size: 18px;
-
 }
 
 input {
@@ -399,7 +392,6 @@ input {
     font-size: 15px;
 
     transition: 0.3s;
-
 }
 
 input:focus {
@@ -411,7 +403,31 @@ input:focus {
     box-shadow: 0 0 0 4px rgba(255, 214, 231, 0.5);
 
     background: white;
+}
 
+.forgot {
+
+    text-align: right;
+
+    margin-top: -8px;
+
+    margin-bottom: 20px;
+}
+
+.forgot a {
+
+    color: #c98b00;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.forgot a:hover {
+
+    text-decoration: underline;
 }
 
 .login-btn {
@@ -446,7 +462,6 @@ input:focus {
     box-shadow: 0 8px 20px rgba(208,160,42,0.3);
 
     transition: 0.3s;
-
 }
 
 .login-btn:hover {
@@ -454,19 +469,29 @@ input:focus {
     transform: translateY(-2px);
 
     box-shadow: 0 12px 25px rgba(208,160,42,0.4);
-
 }
 
-.login-footer {
+.back-link {
 
     text-align: center;
 
-    margin-top: 25px;
+    margin-top: 22px;
+}
 
-    color: #aaa;
+.back-link a {
 
-    font-size: 12px;
+    color: #b8860b;
 
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.back-link a:hover {
+
+    text-decoration: underline;
 }
 
 @media (max-width: 800px) {
@@ -476,13 +501,11 @@ input:focus {
         width: 100%;
 
         max-width: 500px;
-
     }
 
     .left-section {
 
         display: none;
-
     }
 
     .right-section {
@@ -490,9 +513,7 @@ input:focus {
         width: 100%;
 
         padding: 45px 35px;
-
     }
-
 }
 
 </style>
@@ -559,6 +580,7 @@ input:focus {
                         name="name"
                         placeholder="Enter admin name"
                         value="<?= htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                        autocomplete="username"
                         required
                     >
 
@@ -581,10 +603,19 @@ input:focus {
                         id="password"
                         name="password"
                         placeholder="Enter password"
+                        autocomplete="current-password"
                         required
                     >
 
                 </div>
+
+            </div>
+
+            <div class="forgot">
+
+                <a href="forgot_password.php">
+                    Forgot Password?
+                </a>
 
             </div>
 
@@ -597,8 +628,12 @@ input:focus {
 
         </form>
 
-        <div class="login-footer">
-            ©  Event Planner · Admin Panel
+        <div class="back-link">
+
+            <a href="../index.php">
+                ← Back to Event Planner
+            </a>
+
         </div>
 
     </div>
@@ -608,3 +643,4 @@ input:focus {
 </body>
 
 </html>
+

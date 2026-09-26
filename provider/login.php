@@ -1,4 +1,3 @@
-
 <?php
 
 session_start();
@@ -94,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             exit();
                         }
                     }
+
                 } else {
 
                     $error = "Provider account not found.";
@@ -226,6 +226,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
         }
 
+        .forgot {
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 18px;
+        }
+
+        .forgot a {
+            color: #b8860b;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .forgot a:hover {
+            text-decoration: underline;
+        }
+
         button {
             width: 100%;
             padding: 14px;
@@ -272,13 +289,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         .back:hover {
             color: #b8860b;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            color: #999;
-            font-size: 12px;
         }
 
         @media (max-width: 500px) {
@@ -329,50 +339,55 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php if ($error !== ""): ?>
 
             <div class="error">
-                ❌ <?= htmlspecialchars($error, ENT_QUOTES, "UTF-8") ?>
+                <?= htmlspecialchars($error) ?>
             </div>
 
         <?php endif; ?>
 
-        <form method="POST" action="">
+        <form method="POST">
 
-            <label for="email">
+            <label>
                 Provider Email
             </label>
 
             <div class="input-group">
 
-                <span class="input-icon">👤</span>
+                <span class="input-icon">
+                    👤
+                </span>
 
                 <input
                     type="email"
-                    id="email"
                     name="email"
-                    placeholder="Enter your email"
-                    value="<?= htmlspecialchars($_POST["email"] ?? "", ENT_QUOTES, "UTF-8") ?>"
-                    autocomplete="email"
+                    placeholder="Enter your provider email"
                     required
                 >
 
             </div>
 
-            <label for="password">
+            <label>
                 Password
             </label>
 
             <div class="input-group">
 
-                <span class="input-icon">🔐</span>
+                <span class="input-icon">
+                    🔐
+                </span>
 
                 <input
                     type="password"
-                    id="password"
                     name="password"
                     placeholder="Enter your password"
-                    autocomplete="current-password"
                     required
                 >
 
+            </div>
+
+            <div class="forgot">
+                <a href="forgot_password.php">
+                    Forgot Password?
+                </a>
             </div>
 
             <button type="submit">
@@ -383,21 +398,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <div class="register">
             Don't have a provider account?
-            <a href="register.php">Register Now</a>
+            <a href="register.php">
+                Register Now
+            </a>
         </div>
 
         <a href="index.php" class="back">
             ← Back to Provider Home
         </a>
 
-        <div class="footer">
-            ©  Event Planner · Provider Panel
-        </div>
-
     </div>
 
 </body>
 
 </html>
-
 
